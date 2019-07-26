@@ -1,0 +1,15 @@
+com\mycompany\dbeurisko\Foto_.class
+com\mycompany\dbeurisko\Foto.class
+com\mycompany\dbeurisko\Commento.class
+com\mycompany\dbeurisko\Evento.class
+com\mycompany\dbeurisko\service\FotoFacadeREST.class
+com\mycompany\dbeurisko\Evento_.class
+com\mycompany\dbeurisko\service\EventoFacadeREST.class
+com\mycompany\dbeurisko\Utente.class
+com\mycompany\dbeurisko\service\Filter.class
+com\mycompany\dbeurisko\Utente_.class
+com\mycompany\dbeurisko\service\CommentoFacadeREST.class
+com\mycompany\dbeurisko\Commento_.class
+com\mycompany\dbeurisko\service\UtenteFacadeREST.class
+com\mycompany\dbeurisko\service\AbstractFacade.class
+com\mycompany\dbeurisko\service\ApplicationConfig.class
