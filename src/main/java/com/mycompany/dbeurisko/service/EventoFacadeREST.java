@@ -61,7 +61,7 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
         entity.setNonMiPiace(0);
         try {
             super.create(entity);
-            return Response.ok().build();
+            return Response.ok(id,MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             System.out.println(e.toString());
             return Response.serverError().build();
