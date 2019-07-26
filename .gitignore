@@ -19,4 +19,4 @@
 *.tar.gz
 *.rar
 
-# virtual machine # generated-sources/annotations/com/mycompany/dbeurisko
+# virtual machine # target/generated-sources/annotations/com/mycompany/dbeurisko
