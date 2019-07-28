@@ -107,13 +107,24 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public Response findEvents(@QueryParam("s") String search) {
+    public Response findEvents(@QueryParam("s") String search, @QueryParam("t") String type) {
         //Query query = em.createQuery("SELECT e FROM Evento e WHERE e.citta LIKE 'search%'");
-        Query query = em.createQuery("SELECT e FROM Evento e WHERE e.citta LIKE '%" + search + "%'");
-
+        Query query;
+        if("".equals(type) || "123".equals(type))
+            query = em.createQuery("SELECT e FROM Evento e WHERE e.citta LIKE '%" + search + "%'");
+        else{
+            char[] array = type.toCharArray();
+            String strQuery = "SELECT e FROM Evento e WHERE e.citta LIKE '%" + search + "%' AND (";
+            for(int i = 0; i<type.length();i++){
+                strQuery += "e.tipo = " + array[i];
+                if(array.length > 1 && i != array.length - 1)
+                    strQuery += " OR ";
+            }
+            strQuery += ")";
+            query = em.createQuery(strQuery);
+        }
         //query.setParameter("search", search);
         List list = query.getResultList();
-        Gson gson = new Gson();
         JSONObject jsonObj = new JSONObject();
         JSONArray jsonArr = new JSONArray();
         for (Object o : list) {
