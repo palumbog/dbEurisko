@@ -46,9 +46,18 @@ public class FotoFacadeREST extends AbstractFacade<Foto> {
         Utente u = getEntityManager().find(Utente.class, entity.getCreatore().getUsername());
         entity.setIdevento(e);
         entity.setCreatore(u);
+
         Random r = new Random();
-        entity.setIdfoto(r.nextInt());
-        super.create(entity);
+        int id = r.nextInt();
+        while (getEntityManager().find(Foto.class, id) != null) {
+            id = r.nextInt();
+        }
+        entity.setIdfoto(id);
+        try {
+            super.create(entity);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     @PUT
@@ -96,5 +105,5 @@ public class FotoFacadeREST extends AbstractFacade<Foto> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }
