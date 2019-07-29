@@ -45,20 +45,20 @@ public class CommentoFacadeREST extends AbstractFacade<Commento> {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Commento entity) {
+    public void edit(@PathParam("id") String id, Commento entity) {
         super.edit(entity);
     }
 
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
+    public void remove(@PathParam("id") String id) {
         super.remove(super.find(id));
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Commento find(@PathParam("id") Integer id) {
+    public Commento find(@PathParam("id") String id) {
         return super.find(id);
     }
 

@@ -6,6 +6,7 @@
 package com.mycompany.dbeurisko;
 
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,10 +16,12 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -56,8 +59,9 @@ public class Evento implements Serializable {
     @Size(max = 45)
     @Column(name = "nome")
     private String nome;
+    @Size(max = 1)
     @Column(name = "tipo")
-    private Integer tipo;
+    private String tipo;
     @Size(max = 45)
     @Column(name = "data_inizio")
     private String dataInizio;
@@ -86,6 +90,10 @@ public class Evento implements Serializable {
     @JoinColumn(name = "creatore", referencedColumnName = "username")
     @ManyToOne
     private Utente creatore;
+    @OneToMany(mappedBy = "idevento")
+    private Collection<Foto> fotoCollection;
+    @OneToMany(mappedBy = "idevento")
+    private Collection<Commento> commentoCollection;
 
     public Evento() {
     }
@@ -118,11 +126,11 @@ public class Evento implements Serializable {
         this.nome = nome;
     }
 
-    public Integer getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(Integer tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
@@ -204,6 +212,24 @@ public class Evento implements Serializable {
 
     public void setCreatore(Utente creatore) {
         this.creatore = creatore;
+    }
+
+    @XmlTransient
+    public Collection<Foto> getFotoCollection() {
+        return fotoCollection;
+    }
+
+    public void setFotoCollection(Collection<Foto> fotoCollection) {
+        this.fotoCollection = fotoCollection;
+    }
+
+    @XmlTransient
+    public Collection<Commento> getCommentoCollection() {
+        return commentoCollection;
+    }
+
+    public void setCommentoCollection(Collection<Commento> commentoCollection) {
+        this.commentoCollection = commentoCollection;
     }
 
     @Override
