@@ -5,7 +5,6 @@
  */
 package com.mycompany.dbeurisko.service;
 
-import com.google.gson.Gson;
 import com.mycompany.dbeurisko.Evento;
 import com.mycompany.dbeurisko.Foto;
 import com.mycompany.dbeurisko.Utente;
@@ -49,9 +48,9 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response createEvent(Evento entity) {
         Random r = new Random();
-        int id = r.nextInt();
+        int id = r.nextInt(1000000);
         while (getEntityManager().find(Evento.class, id) != null) {
-            id = r.nextInt();
+            id = r.nextInt(1000000);
         }
         entity.setIdevento(id);
         String username = entity.getCreatore().getUsername();
@@ -61,7 +60,7 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
         entity.setNonMiPiace(0);
         try {
             super.create(entity);
-            return Response.ok(id,MediaType.APPLICATION_JSON).build();
+            return Response.ok(id, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             System.out.println(e.toString());
             return Response.serverError().build();
@@ -80,6 +79,30 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
     @Path("{id}")
     public void remove(@PathParam("id") Integer id) {
         super.remove(super.find(id));
+    }
+
+    @GET
+    @Path("positions")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getPosition() {
+        Query query = em.createQuery("SELECT e FROM Evento e");
+        List list = query.getResultList();
+        JSONObject jsonObj = new JSONObject();
+        JSONArray jsonArr = new JSONArray();
+        for (Object o : list) {
+            if (o instanceof Evento) {
+                Integer idEv = ((Evento) o).getIdevento();
+                JSONObject itemObj = new JSONObject();
+                itemObj.put("nome", ((Evento) o).getNome());
+                itemObj.put("descr", ((Evento) o).getDescrizione());
+                itemObj.put("id", ((Evento) o).getIdevento());
+                itemObj.put("lat", ((Evento) o).getLuogoX());
+                itemObj.put("long", ((Evento) o).getLuogoY());
+                jsonArr.put(itemObj);
+            }
+        }
+        jsonObj.put("positions", jsonArr);
+        return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
     }
 
     @GET
@@ -102,6 +125,8 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
         jsonObj.put("tipo", e.getTipo());
         List<String> images = getImagesEvent(id);
         jsonObj.put("images", images);
+        List<String> comments = getCommentsEvent(e.getIdevento());
+        jsonObj.put("comments", comments);
         return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -110,15 +135,16 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
     public Response findEvents(@QueryParam("s") String search, @QueryParam("t") String type) {
         //Query query = em.createQuery("SELECT e FROM Evento e WHERE e.citta LIKE 'search%'");
         Query query;
-        if("".equals(type) || "123".equals(type))
+        if ("".equals(type) || "123".equals(type)) {
             query = em.createQuery("SELECT e FROM Evento e WHERE e.citta LIKE '%" + search + "%'");
-        else{
+        } else {
             char[] array = type.toCharArray();
             String strQuery = "SELECT e FROM Evento e WHERE e.citta LIKE '%" + search + "%' AND (";
-            for(int i = 0; i<type.length();i++){
+            for (int i = 0; i < type.length(); i++) {
                 strQuery += "e.tipo = " + array[i];
-                if(array.length > 1 && i != array.length - 1)
+                if (array.length > 1 && i != array.length - 1) {
                     strQuery += " OR ";
+                }
             }
             strQuery += ")";
             query = em.createQuery(strQuery);
@@ -147,7 +173,38 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
 
         return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
     }
+    
+    @GET
+    @Path("user/{user}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response findEventUser(@PathParam("user") String user) {
+        //Query query = em.createQuery("SELECT e FROM Evento e WHERE e.citta LIKE 'search%'");
+        Query query = em.createQuery("SELECT e FROM Evento e WHERE e.creatore = :user").setParameter("user", getEntityManager().find(Utente.class, user));
+        
+        List list = query.getResultList();
+        JSONObject jsonObj = new JSONObject();
+        JSONArray jsonArr = new JSONArray();
+        for (Object o : list) {
+            if (o instanceof Evento) {
+                Integer idEv = ((Evento) o).getIdevento();
+                JSONObject itemObj = new JSONObject();
+                List images = getImagesEvent(idEv);
+                String img = "";
+                if (!images.isEmpty()) {
+                    img = (String) images.get(0);
+                }
+                itemObj.put("nome", ((Evento) o).getNome());
+                itemObj.put("descr", ((Evento) o).getDescrizione());
+                itemObj.put("id", ((Evento) o).getIdevento());
+                itemObj.put("img", img);
+                jsonArr.put(itemObj);
+            }
+        }
+        jsonObj.put("events", jsonArr);
 
+        return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
+    }
+    
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -182,6 +239,10 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
             System.out.println(e);
         }
         return list;
+    }
+
+    private List<String> getCommentsEvent(Integer idevento) {
+        return em.createQuery("SELECT c.commento FROM Commento c WHERE c.idevento = :idevento").setParameter("idevento", getEntityManager().find(Evento.class, idevento)).getResultList();
     }
 
 }

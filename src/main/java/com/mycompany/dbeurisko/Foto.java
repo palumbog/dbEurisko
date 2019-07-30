@@ -39,7 +39,6 @@ public class Foto implements Serializable {
     @Column(name = "idfoto")
     private Integer idfoto;
     @Lob
-    @Size(max = 65535)
     @Column(name = "foto")
     private String foto;
     @JoinColumn(name = "creatore", referencedColumnName = "username")

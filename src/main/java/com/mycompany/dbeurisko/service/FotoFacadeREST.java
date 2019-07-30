@@ -48,15 +48,15 @@ public class FotoFacadeREST extends AbstractFacade<Foto> {
         entity.setCreatore(u);
 
         Random r = new Random();
-        int id = r.nextInt();
+        int id = r.nextInt(1000000);
         while (getEntityManager().find(Foto.class, id) != null) {
-            id = r.nextInt();
+            id = r.nextInt(1000000);
         }
         entity.setIdfoto(id);
         try {
             super.create(entity);
-        } catch (Exception e) {
-            System.out.println(e);
+        } catch (Exception ex) {
+            System.out.println(ex);
         }
     }
 
