@@ -98,6 +98,7 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
                 itemObj.put("id", ((Evento) o).getIdevento());
                 itemObj.put("lat", ((Evento) o).getLuogoX());
                 itemObj.put("long", ((Evento) o).getLuogoY());
+                itemObj.put("tipo", ((Evento) o).getTipo());
                 jsonArr.put(itemObj);
             }
         }
