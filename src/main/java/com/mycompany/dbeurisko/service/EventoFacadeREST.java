@@ -5,6 +5,7 @@
  */
 package com.mycompany.dbeurisko.service;
 
+import com.mycompany.dbeurisko.Commento;
 import com.mycompany.dbeurisko.Evento;
 import com.mycompany.dbeurisko.Foto;
 import com.mycompany.dbeurisko.Utente;
@@ -78,6 +79,8 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Integer id) {
+        deletePhotos(id);
+        deleteComments(id);
         super.remove(super.find(id));
     }
 
@@ -126,7 +129,7 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
         jsonObj.put("tipo", e.getTipo());
         List<String> images = getImagesEvent(id);
         jsonObj.put("images", images);
-        List<String> comments = getCommentsEvent(e.getIdevento());
+        List<JSONObject> comments = getCommentsEvent(e.getIdevento());
         jsonObj.put("comments", comments);
         return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
     }
@@ -167,6 +170,7 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
                 itemObj.put("descr", ((Evento) o).getDescrizione());
                 itemObj.put("id", ((Evento) o).getIdevento());
                 itemObj.put("img", img);
+                itemObj.put("citta", ((Evento) o).getCitta());
                 jsonArr.put(itemObj);
             }
         }
@@ -242,8 +246,36 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
         return list;
     }
 
-    private List<String> getCommentsEvent(Integer idevento) {
-        return em.createQuery("SELECT c.commento FROM Commento c WHERE c.idevento = :idevento").setParameter("idevento", getEntityManager().find(Evento.class, idevento)).getResultList();
+    private List<JSONObject> getCommentsEvent(Integer idevento) {
+        List result = em.createQuery("SELECT c.commento, c.creatore FROM Commento c WHERE c.idevento = :idevento").setParameter("idevento", getEntityManager().find(Evento.class, idevento)).getResultList();
+        List<JSONObject> comments = new ArrayList<>();
+        for(Object res:result) {
+            Object[] ar = (Object[]) res;
+            JSONObject obj = new JSONObject();
+            obj.put("comment", (String)ar[0]);
+            Utente u = (Utente)ar[1];
+            obj.put("creator", u.getUsername());
+            comments.add(obj);
+        }
+        return comments;
+    }
+
+    private void deletePhotos(Integer id) {
+        List result = em.createQuery("SELECT f FROM Foto f WHERE f.idevento = :idevento").setParameter("idevento", getEntityManager().find(Evento.class, id)).getResultList();
+        for(Object foto: result){
+            if (foto instanceof Foto) {
+                    getEntityManager().remove(foto);
+                }
+        }
+    }
+
+    private void deleteComments(Integer id) {
+        List result = em.createQuery("SELECT f FROM Commento f WHERE f.idevento = :idevento").setParameter("idevento", getEntityManager().find(Evento.class, id)).getResultList();
+        for(Object commento: result){
+            if (commento instanceof Commento) {
+                    getEntityManager().remove(commento);
+                }
+        }
     }
 
 }
