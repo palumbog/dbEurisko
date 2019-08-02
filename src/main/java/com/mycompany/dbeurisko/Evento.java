@@ -39,8 +39,6 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Evento.findByDataFine", query = "SELECT e FROM Evento e WHERE e.dataFine = :dataFine")
     , @NamedQuery(name = "Evento.findByLuogoX", query = "SELECT e FROM Evento e WHERE e.luogoX = :luogoX")
     , @NamedQuery(name = "Evento.findByLuogoY", query = "SELECT e FROM Evento e WHERE e.luogoY = :luogoY")
-    , @NamedQuery(name = "Evento.findByMiPiace", query = "SELECT e FROM Evento e WHERE e.miPiace = :miPiace")
-    , @NamedQuery(name = "Evento.findByNonMiPiace", query = "SELECT e FROM Evento e WHERE e.nonMiPiace = :nonMiPiace")
     , @NamedQuery(name = "Evento.findByCitta", query = "SELECT e FROM Evento e WHERE e.citta = :citta")
     , @NamedQuery(name = "Evento.findByOraInizio", query = "SELECT e FROM Evento e WHERE e.oraInizio = :oraInizio")
     , @NamedQuery(name = "Evento.findByOraFine", query = "SELECT e FROM Evento e WHERE e.oraFine = :oraFine")})
@@ -74,10 +72,6 @@ public class Evento implements Serializable {
     @Size(max = 100)
     @Column(name = "luogo_y")
     private String luogoY;
-    @Column(name = "miPiace")
-    private Integer miPiace;
-    @Column(name = "nonMiPiace")
-    private Integer nonMiPiace;
     @Size(max = 100)
     @Column(name = "citta")
     private String citta;
@@ -164,22 +158,6 @@ public class Evento implements Serializable {
 
     public void setLuogoY(String luogoY) {
         this.luogoY = luogoY;
-    }
-
-    public Integer getMiPiace() {
-        return miPiace;
-    }
-
-    public void setMiPiace(Integer miPiace) {
-        this.miPiace = miPiace;
-    }
-
-    public Integer getNonMiPiace() {
-        return nonMiPiace;
-    }
-
-    public void setNonMiPiace(Integer nonMiPiace) {
-        this.nonMiPiace = nonMiPiace;
     }
 
     public String getCitta() {
