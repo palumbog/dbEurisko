@@ -20,7 +20,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -57,8 +56,6 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
         String username = entity.getCreatore().getUsername();
         Utente user = getEntityManager().find(Utente.class, username);
         entity.setCreatore(user);
-        entity.setMiPiace(0);
-        entity.setNonMiPiace(0);
         try {
             super.create(entity);
             return Response.ok(id, MediaType.APPLICATION_JSON).build();
@@ -67,13 +64,6 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
             return Response.serverError().build();
         }
 
-    }
-
-    @PUT
-    @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Evento entity) {
-        super.edit(entity);
     }
 
     @DELETE
@@ -183,9 +173,7 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
     @Path("user/{user}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response findEventUser(@PathParam("user") String user) {
-        //Query query = em.createQuery("SELECT e FROM Evento e WHERE e.citta LIKE 'search%'");
         Query query = em.createQuery("SELECT e FROM Evento e WHERE e.creatore = :user").setParameter("user", getEntityManager().find(Utente.class, user));
-        
         List list = query.getResultList();
         JSONObject jsonObj = new JSONObject();
         JSONArray jsonArr = new JSONArray();
@@ -210,20 +198,6 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
         return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
     }
     
-    @GET
-    @Path("{from}/{to}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Evento> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-    @GET
-    @Path("count")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
-    }
-
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -232,14 +206,10 @@ public class EventoFacadeREST extends AbstractFacade<Evento> {
     private List<String> getImagesEvent(Integer id) {
         List<String> list = new ArrayList<>();
         try {
-            //SELECT f FROM Foto f WHERE f.idfoto = :idfoto 
             List l = em.createQuery("SELECT f FROM Foto f WHERE f.idevento = :idevento").setParameter("idevento", getEntityManager().find(Evento.class, id)).getResultList();
-            //List l = em.createQuery("SELECT img FROM Foto img WHERE img.idevento = ?1.").setParameter(1, getEntityManager().find(Evento.class, id)).getResultList();
-            for (Object o : l) {
-                if (o instanceof Foto) {
+            for (Object o : l)
+                if (o instanceof Foto)
                     list.add(((Foto) o).getFoto());
-                }
-            }
         } catch (Exception e) {
             System.out.println(e);
         }

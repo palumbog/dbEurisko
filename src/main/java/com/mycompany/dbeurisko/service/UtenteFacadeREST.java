@@ -48,19 +48,6 @@ public class UtenteFacadeREST extends AbstractFacade<Utente> {
         return Response.ok(null, MediaType.APPLICATION_JSON).build();
     }
 
-    @PUT
-    @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") String id, Utente entity) {
-        super.edit(entity);
-    }
-
-    @DELETE
-    @Path("{id}")
-    public void remove(@PathParam("id") String id) {
-        super.remove(super.find(id));
-    }
-
     @POST
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -76,27 +63,6 @@ public class UtenteFacadeREST extends AbstractFacade<Utente> {
                 return Response.ok(null, MediaType.APPLICATION_JSON).build();
         }
         
-    }
-
-    @GET
-    @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Utente> findAll() {
-        return super.findAll();
-    }
-
-    @GET
-    @Path("{from}/{to}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Utente> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-    @GET
-    @Path("count")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
     }
 
     @Override

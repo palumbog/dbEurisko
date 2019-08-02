@@ -17,14 +17,12 @@ public class Filter implements ContainerRequestFilter,ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        //DO Stuff
         System.out.println("RequestContext");
     }
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext s)
             throws IOException {
-        //DO Stuff
         System.out.println("ResponseContext");
         s.getHeaders().putSingle("Access-Control-Allow-Origin", "*");
         s.getHeaders().putSingle("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE");
